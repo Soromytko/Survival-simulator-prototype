@@ -1,0 +1,28 @@
+[gd_scene load_steps=6 format=3 uid="uid://bt5kcbtlckjmp"]
+
+[ext_resource type="Script" path="res://Modules/OpenWorld/Scripts/ChunkMeshBuilder.gd" id="1_cdott"]
+[ext_resource type="Material" uid="uid://dq0d0b35wqcyf" path="res://Modules/OpenWorld/Wireframe.tres" id="2_mm6rh"]
+[ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="3_oxqdw"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_v1xol"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_s0ujv"]
+
+[node name="ChunkMeshGeneration" type="Node3D"]
+script = ExtResource("1_cdott")
+chunk_size = Vector3(10, 0, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000745893, -0.0105028, 0.0117007)
+material_override = ExtResource("2_mm6rh")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_v1xol")
+
+[node name="FreeCamera3D" parent="." instance=ExtResource("3_oxqdw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.93664, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="FreeCamera3D"]
+transform = Transform3D(0.791224, 5.96046e-08, -0.611527, -0.100931, 0.986286, -0.13059, 0.60314, 0.165048, 0.780372, 0, 0, 0)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_s0ujv")

@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dq0d0b35wqcyf"]
+
+[ext_resource type="Shader" path="res://Modules/OpenWorld/Wireframe.gdshader" id="1_mj4x8"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_mj4x8")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/wire_color = Color(0, 0, 0, 1)
+shader_parameter/wire_width = 5.0
+shader_parameter/wire_smoothness = 0.01
