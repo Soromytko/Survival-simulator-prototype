@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://fff452aielmt"]
+
+[ext_resource type="Script" path="res://demo/qtterrain/scripts/TerrainNodeDemo.gd" id="1_dmkrt"]
+[ext_resource type="Shader" path="res://addons/qtterrain/shaders/TerrainQuadtreeNode.gdshader" id="2_61yuu"]
+
+
+[node name="ChildNodeDemo" type="Node3D"]
+script = ExtResource("1_dmkrt")
+_shader = ExtResource("2_61yuu")

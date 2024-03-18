@@ -21,9 +21,30 @@ void fragment() {
 	
 	//NORMAL *= 0.5;
 	
-	ALBEDO = texture(main_texture, uv * 100.0).rgb;
+	ALBEDO = texture(main_texture, uv * 50.0).rgb;
+	//ALBEDO = texture(heightmap, uv).rgb;
 	//NORMAL = texture(normal_map, uv).rgb;
 	//NORMAL_MAP = texture(normal_map, uv).rgb;
+	
+	
+	//v1
+	//vec3 color = texture(main_texture, uv).rgb;
+	//float g = sqrt(pow(color.x, 2) + pow(color.y, 2) + pow(color.z, 2));
+	//g = (g < 1.1) ? 0.0 : 1.0;
+	//ALBEDO = color;
+	//ALBEDO = vec3(g, g, g);
+	
+	
+	// v10
+	//float a = 20.0;
+	//float b = 100.0;
+	//vec3 c = color * 255.0;
+	//color.r = (c.r - a) * (255.0 - 0.0) / (b - a);
+	//color.g = (c.g - a) * (255.0 - 0.0) / (b - a);
+	//color.b = (c.b - a) * (255.0 - 0.0) / (b - a);
+	//ALBEDO = color / 255.0;
+	
+	
 	
 	vec3 n = v_normal;
 	

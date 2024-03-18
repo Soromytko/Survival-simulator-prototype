@@ -1,0 +1,14 @@
+[remap]
+
+importer="image"
+type="Image"
+uid="uid://bwakl0np2rbne"
+path="res://.godot/imported/heightmap2.png-1c70a52ca26149e3bb05f1f1957a13b5.image"
+
+[deps]
+
+source_file="res://demo/qtterrain/textures/heightmap2.png"
+dest_files=["res://.godot/imported/heightmap2.png-1c70a52ca26149e3bb05f1f1957a13b5.image"]
+
+[params]
+

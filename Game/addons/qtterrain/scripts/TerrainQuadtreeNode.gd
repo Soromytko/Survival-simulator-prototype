@@ -1,3 +1,4 @@
+@tool
 class_name TerrainQuadtreeNode extends Node3D
 
 class Quarter:
@@ -6,6 +7,13 @@ class Quarter:
 	const THIRD : Vector3 = Vector3(-1, 0, 1)
 	const FOURTH : Vector3 = Vector3(1, 0, 1)
 	
+
+signal loaded()
+signal updated()
+signal released()
+signal mesh_created()
+signal mesh_released()
+
 
 class Config:
 	var parent : TerrainQuadtreeNode
@@ -20,17 +28,9 @@ class GlobalConfig:
 	var max_lod : int
 	var meshes = [[[[]]]]
 	var some_child_scene : PackedScene
-	var heightmap : Texture
-	var normal_map : Texture
+	var heightmap : Texture2D
 	var main_texture : Texture
 	var shader : Shader
-	
-	
-signal loaded()
-signal updated()
-signal released()
-signal mesh_created()
-signal mesh_released()
 
 
 var _config : Config
@@ -38,7 +38,11 @@ var _global_config : GlobalConfig
 var _heightmap_offset : Vector2
 var _children : Array[TerrainQuadtreeNode]
 var mesh_instance : MeshInstance3D:
-	get: return mesh_instance
+	get:
+		return mesh_instance
+var collision_shape : CollisionShape3D:
+	get:
+		return collision_shape
 	
 	
 func _init(config : Config, global_config : GlobalConfig):
@@ -68,6 +72,7 @@ func update_recursively(observer_position : Vector3):
 	if _can_subdivide():
 		if is_leaf():
 			_release_mesh()
+			_release_collision_shape()
 			_create_children()
 			updated.emit()
 		for child in _children:
@@ -76,6 +81,7 @@ func update_recursively(observer_position : Vector3):
 		if !is_leaf():
 			_release_children()
 		_update_mesh()
+		_update_collision_shape()
 	
 	
 func _can_subdivide() -> bool:
@@ -97,6 +103,7 @@ func _create_children():
 	for i in _children.size():
 		_children[i] = TerrainQuadtreeNode.new(child_config, _global_config)
 		add_child(_children[i])
+		_children[i].owner = owner
 	_children[0]._set_position_in_quadtree(Quarter.FIRST)
 	_children[1]._set_position_in_quadtree(Quarter.SECOND)
 	_children[2]._set_position_in_quadtree(Quarter.THIRD)
@@ -126,14 +133,43 @@ func _update_mesh():
 	if mesh_instance == null:
 		mesh_instance = MeshInstance3D.new()
 		add_child(mesh_instance)
-	mesh_instance.ignore_occlusion_culling = true
-	mesh_instance.mesh = _get_suitable_mesh()
-	mesh_instance.extra_cull_margin = 100
-	mesh_instance.scale = Vector3(_config.size.x, 1, _config.size.z)
-	mesh_instance.material_override = _create_material()
-	mesh_created.emit()
+		mesh_instance.owner = owner
+		mesh_instance.ignore_occlusion_culling = true
+		mesh_instance.mesh = _get_suitable_mesh()
+		mesh_instance.extra_cull_margin = 100
+		mesh_instance.scale = Vector3(_config.size.x, 1, _config.size.z)
+		mesh_instance.material_override = _create_material()
+		mesh_created.emit()
 	
 	
+func _update_collision_shape():
+	return
+	if collision_shape == null:
+		collision_shape = CollisionShape3D.new()
+		var shape : HeightMapShape3D = HeightMapShape3D.new()
+		shape.map_width = _config.size.x + 1
+		shape.map_depth = _config.size.z + 1
+		collision_shape.shape = shape
+		#collision_shape.scale = Vector3.ONE / 15.0 * _config.size
+		add_child(collision_shape)
+		var image : Image = _global_config.heightmap.get_image()
+		var root_config : Config = _global_config.root._config
+		
+		image.load("res://demo/qtterrain/textures/heightmap2.png")
+		
+		var offset : Vector3 = _config.size * 0.5
+		offset = global_position * 2
+		
+		for i in shape.map_width:
+			for j in shape.map_depth:
+				var point : Vector2 = Vector2(i + offset.x, j + offset.z) / \
+					Vector2(root_config.size.x, root_config.size.z)
+				var pixel : Vector2i = Vector2i(point * Vector2(image.get_size()))
+				var y : float = image.get_pixel(pixel.y, pixel.x).r * _global_config.root._config.size.y
+				shape.map_data[i * shape.map_depth + j] = y
+		collision_shape.owner = owner
+		
+		
 var debug_node : Node3D
 func _get_suitable_mesh() -> Mesh:
 	var left_index : int = 0
@@ -186,7 +222,6 @@ func _create_material():
 	material.set_shader_parameter("lod", _config.lod)
 	material.set_shader_parameter("height", _global_config.root._config.size.y)
 	material.set_shader_parameter("heightmap", _global_config.heightmap)
-	material.set_shader_parameter("normal_map", _global_config.normal_map)
 	material.set_shader_parameter("heightmap_offset", _heightmap_offset)
 	material.set_shader_parameter("main_texture", _global_config.main_texture)
 	return material
@@ -196,5 +231,17 @@ func _release_mesh():
 	if mesh_instance != null:
 		mesh_instance.queue_free()
 		mesh_released.emit()
+		mesh_instance = null
 	
 	
+func _release_collision_shape():
+	if collision_shape != null:
+		collision_shape.queue_free()
+		collision_shape = null
+	
+	
+func _create_collision_shape() -> CollisionShape3D:
+	var collision_shape : CollisionShape3D = CollisionShape3D.new()
+	collision_shape.shape = HeightMapShape3D.new()
+	return collision_shape
+

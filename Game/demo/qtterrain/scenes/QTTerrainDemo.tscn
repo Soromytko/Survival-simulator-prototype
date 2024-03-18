@@ -1,0 +1,41 @@
+[gd_scene load_steps=8 format=3 uid="uid://cfoiy5wwvvftu"]
+
+[ext_resource type="Script" path="res://addons/qtterrain/scripts/terrain.gd" id="1_5xoyu"]
+[ext_resource type="Texture2D" uid="uid://cdpe6vm55arsf" path="res://demo/qtterrain/textures/main_texture.png" id="2_joxu4"]
+[ext_resource type="Texture2D" uid="uid://b1r8ib7g1urlm" path="res://demo/qtterrain/textures/heightmap1.png" id="3_5bj7f"]
+[ext_resource type="PackedScene" uid="uid://c7jake3jwj74c" path="res://dynamic_res/Scenes/FreeCamera3D.tscn" id="4_p1gt4"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cprcj"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_em5c8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55emw"]
+albedo_color = Color(1, 0, 0, 1)
+
+[node name="QTTerrainDemo" type="Node3D"]
+
+[node name="Terrain (QTTerrain plugin)" type="Node3D" parent="." node_paths=PackedStringArray("observer")]
+script = ExtResource("1_5xoyu")
+size = Vector3i(100, 5, 100)
+main_texture = ExtResource("2_joxu4")
+heightmap = ExtResource("3_5bj7f")
+observer = NodePath("../Camera3D")
+
+[node name="Camera3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.708241, 0.70597, 0, -0.70597, 0.708241, -0.674706, 1.60135, 1.83784)
+
+[node name="StaticBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6691, 15.5136, -6.4068)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("SphereShape3D_cprcj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("SphereMesh_em5c8")
+surface_material_override/0 = SubResource("StandardMaterial3D_55emw")
+
+[node name="FreeCamera3D" parent="." instance=ExtResource("4_p1gt4")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.687164, 0.726503, 0, -0.726503, 0.687164, -0.605509, 2.24359, -3.40861)
+shadow_enabled = true
