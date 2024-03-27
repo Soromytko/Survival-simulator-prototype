@@ -1,32 +1,28 @@
-class_name PlayerWalkState extends PlayerState
+extends "./player_state.gd"
 
-var _jump_force : float = 0.3
 
 func _on_enter():
 	_play_anim("walk")
-	
 
-func _on_update(delta):
-	var input = player.get_input()
-	var relative_input = player.get_relative_input(input)
+
+func _on_physics_update(delta):
+	var input : Vector3 = class_player_input.get_move_axes()
+	var relative_input = player_movement_controller.get_direction_relative_to_camera(input)
 	
 	if Input.is_action_pressed("sprint"):
 		_play_anim("run")
 	else: _play_anim("walk")
 	
-	if player.is_on_floor():
-		if Input.is_action_just_pressed("jump"):
+	if player_movement_controller.is_grounded():
+		if class_player_input.get_is_jump():
 			_switch_state("PlayerJumpState")
 	else:
-		player.apply_gravity(delta)
+		player_movement_controller.apply_gravity(delta)
 
-	player.set_move_direction(relative_input)
-	var move_speed = player.sprint_speed if Input.is_action_pressed("sprint") else player.walk_speed
-	player.move(delta * move_speed * 100)
+	player_movement_controller.move(relative_input, delta)
+	player_movement_controller.rotate_to_direction(relative_input, delta)
 	if input != Vector3.ZERO:
-		player.rotate_to_direction(relative_input, delta)
+		player_movement_controller.rotate_to_direction(relative_input, delta)
 	else:
 		_switch_state("PlayerIdleState")
-		
 
-	
