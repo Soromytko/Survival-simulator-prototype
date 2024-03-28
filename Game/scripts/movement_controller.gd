@@ -11,7 +11,12 @@ func move(direction : Vector3, speed : float):
 
 func apply_gravity(force : float):
 	character_body.velocity.y -= force
-	character_body.move_and_slide()
+	#character_body.move_and_slide()
+	print(character_body.velocity)
+
+
+func _mo():
+	pass
 
 
 func jump(force : float):

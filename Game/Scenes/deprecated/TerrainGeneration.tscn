@@ -55,8 +55,8 @@ shape = SubResource("SphereShape3D_eoq1u")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Node3D/RigidBody3D"]
 mesh = SubResource("SphereMesh_8wjsc")
 
-[node name="Player" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("21_y5ry1")]
+[node name="Player" parent="." instance=ExtResource("21_y5ry1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.22484, 0, 7.85219)
-camera = NodePath("")
 
-[node name="ThirdPersonCamera" parent="." instance=ExtResource("22_r2che")]
+[node name="ThirdPersonCamera" parent="." node_paths=PackedStringArray("target") instance=ExtResource("22_r2che")]
+target = NodePath("../Player")

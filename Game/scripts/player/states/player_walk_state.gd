@@ -9,7 +9,7 @@ func _on_physics_update(delta):
 	var input : Vector3 = class_player_input.get_move_axes()
 	var relative_input = player_movement_controller.get_direction_relative_to_camera(input)
 	
-	if Input.is_action_pressed("sprint"):
+	if class_player_input.get_is_sprint():
 		_play_anim("run")
 	else: _play_anim("walk")
 	
